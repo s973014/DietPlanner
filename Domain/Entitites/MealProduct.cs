@@ -9,15 +9,22 @@ namespace Domain.Entitites
 {
     public class MealProduct
     {
+        public Guid MealId { get; private set; }
         public Meal Meal { get; private set; }
-        public Product Product { get; private set; }
-        public float AmountInGrams { get; private set; }
 
+        public Guid ProductId { get; private set; }
+        public Product Product { get; private set; }
+
+        public float AmountInGrams { get; private set; }
 
         public MealProduct(Meal meal, Product product, float grams)
         {
             Meal = meal;
+            MealId = meal.Id;
+
             Product = product;
+            ProductId = product.Id;
+
             AmountInGrams = grams;
         }
 
