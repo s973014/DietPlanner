@@ -21,6 +21,7 @@ namespace Infrastructure.Data
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Meal> Meals => Set<Meal>();
         public DbSet<WeeklyPlan> WeeklyPlans => Set<WeeklyPlan>();
+        public DbSet<MealProduct> MealProducts => Set<MealProduct>();
         public DbSet<DailyMeal> DailyMeals => Set<DailyMeal>();
         public DbSet<Substitution> Substitutions => Set<Substitution>();
 
