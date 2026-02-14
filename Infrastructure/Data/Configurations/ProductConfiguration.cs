@@ -13,19 +13,24 @@ namespace Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.ToTable("products");
+            builder.HasKey(p => p.Id);
 
-            builder.HasKey(x => x.Id);
+            builder.Property(p => p.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            builder.Property(x => x.Name)
-                .IsRequired();
+            builder.HasOne(p => p.Allergy)
+                   .WithMany()
+                   .HasForeignKey(p => p.AllergyId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.OwnsOne(x => x.NutritionPer100g, n =>
+            
+            builder.OwnsOne(p => p.NutritionPer100g, n =>
             {
-                n.Property(p => p.Calories).HasColumnName("calories");
-                n.Property(p => p.Proteins).HasColumnName("proteins");
-                n.Property(p => p.Fats).HasColumnName("fats");
-                n.Property(p => p.Carbs).HasColumnName("carbs");
+                n.Property(x => x.Calories).HasColumnName("Calories").IsRequired();
+                n.Property(x => x.Proteins).HasColumnName("Proteins").IsRequired();
+                n.Property(x => x.Fats).HasColumnName("Fats").IsRequired();
+                n.Property(x => x.Carbs).HasColumnName("Carbs").IsRequired();
             });
         }
     }
