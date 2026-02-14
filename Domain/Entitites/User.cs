@@ -25,13 +25,12 @@ namespace Domain.Entitites
 
         private User() { }
 
-        public User(string name, string email, string passwordHash)
+        public User(string name, string email, string passwordHash, UserRole role)
         {
-            Id = Guid.NewGuid();
             Name = name;
             Email = email;
             PasswordHash = passwordHash;
-            Role = UserRole.User;
+            Role = role;
         }
 
         public void UpdateProfile(float weight, float height, ActivityLevel activity, GoalType goal)

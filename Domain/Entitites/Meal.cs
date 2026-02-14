@@ -29,6 +29,8 @@ namespace Domain.Entitites
             Description = description;
         }
 
+        private Meal() { }
+
         public Meal(Guid id, string name)
         {
             Id = id;

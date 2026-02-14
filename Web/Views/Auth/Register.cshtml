@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h2>Регистрация</h2>
+
+<form method="post" asp-action="Register" asp-controller="Auth">
+    <div class="mb-3">
+        <label for="Name" class="form-label">Имя</label>
+        <input type="text" id="Name" name="Name" required class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Email" class="form-label">Email</label>
+        <input type="email" id="Email" name="Email" required class="form-control" />
+    </div>
+
+    <div class="mb-3 position-relative">
+        <label for="Password" class="form-label">Пароль</label>
+        <input type="password" id="Password" name="Password" required class="form-control" />
+        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword('Password', this)">
+            👁
+        </button>
+    </div>
+
+    <div class="mb-3 position-relative">
+        <label for="ConfirmPassword" class="form-label">Подтвердите пароль</label>
+        <input type="password" id="ConfirmPassword" name="ConfirmPassword" required class="form-control" />
+        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword('ConfirmPassword', this)">
+            👁
+        </button>
+    </div>
+
+    <div class="mb-3">
+        <label for="Role" class="form-label">Выберите роль</label>
+        <select id="Role" name="Role" class="form-select">
+            <option value="User">Пользователь</option>
+            <option value="Dietitian">Диетолог</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+</form>
+
+<script>
+
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (e) {
+        const password = document.getElementById("Password").value;
+        const confirm = document.getElementById("ConfirmPassword").value;
+        if (password !== confirm) {
+            e.preventDefault();
+            alert("Пароли не совпадают!");
+        }
+    });
+
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            button.innerText = "👁";
+        } else {
+            input.type = "password";
+            button.innerText = "👁";
+        }
+    }
+</script>
