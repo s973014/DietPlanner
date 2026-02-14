@@ -1,0 +1,82 @@
+﻿@model Web.Models.Meals.MealCreateViewModel
+@{
+    var products = ViewBag.Products as List<Domain.Entitites.Product>;
+}
+
+<h2>Создать блюдо</h2>
+<a class="btn btn-secondary" href="/Meals">Назад</a>
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label class="form-label">Название блюда</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Описание</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <hr />
+    <h4>Ингредиенты</h4>
+
+    <table class="table" id="ingredientsTable">
+        <thead>
+            <tr>
+                <th>Продукт</th>
+                <th>Граммы</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button type="button" class="btn btn-secondary" onclick="addIngredient()">Добавить ингредиент</button>
+
+    <hr />
+    <button type="submit" class="btn btn-success">Сохранить блюдо</button>
+    <a class="btn btn-secondary" href="/Meals">Отмена</a>
+</form>
+
+@section Scripts {
+    <script>
+        let index = 0;
+
+        function addIngredient() {
+            const table = document.getElementById("ingredientsTable").querySelector("tbody");
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>
+                    <select name="Ingredients[${index}].ProductId" class="form-select">
+                        ${getProductOptions()}
+                    </select>
+                </td>
+                <td>
+                    <input name="Ingredients[${index}].Grams"
+                           type="number"
+                           step="1"
+                           class="form-control"
+                           required />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">✕</button>
+                </td>
+            `;
+
+            table.appendChild(row);
+            index++;
+        }
+
+        function getProductOptions() {
+            return `
+                @foreach (var p in products)
+                {
+                        <text><option value="@p.Id">@p.Name</option></text>
+                }
+            `;
+        }
+    </script>
+}

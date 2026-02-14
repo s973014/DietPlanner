@@ -10,11 +10,11 @@ namespace Domain.Entitites
 {
     public class Meal : Entity
     {
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
 
         private List<MealProduct> _products = new();
-        public IReadOnlyCollection<MealProduct> Products => _products;
+        public ICollection<MealProduct> Products => _products;
 
         public Nutrition TotalNutrition =>
             _products

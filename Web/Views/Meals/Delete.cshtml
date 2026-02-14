@@ -1,0 +1,14 @@
+﻿@model Infrastructure.Data.Repositories.MealListItemVm
+
+<h2>Удалить блюдо</h2>
+
+<div>
+    <p>Вы действительно хотите удалить блюдо <strong>@Model.Name</strong>?</p>
+    <p>Калории: @Model.Calories, Белки: @Model.Proteins, Жиры: @Model.Fats, Углеводы: @Model.Carbs</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>

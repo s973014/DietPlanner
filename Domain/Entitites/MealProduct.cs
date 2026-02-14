@@ -9,14 +9,14 @@ namespace Domain.Entitites
 {
     public class MealProduct
     {
-        public Guid MealId { get; private set; }
-        public Guid ProductId { get; private set; }
-        public float AmountInGrams { get; private set; }
+        public Guid MealId { get;  set; }
+        public Guid ProductId { get; set; }
+        public float AmountInGrams { get;  set; }
 
-        public Meal Meal { get; private set; }
-        public Product Product { get; private set; }
+        public Meal Meal { get;  set; }
+        public Product Product { get; set; }
 
-        private MealProduct() { } 
+        public MealProduct() { } 
         public MealProduct(Guid mealId, Guid productId, float grams)
         {
             MealId = mealId;
@@ -33,7 +33,7 @@ namespace Domain.Entitites
         }
         public Nutrition CalculateNutrition()
         {
-            var factor = AmountInGrams / 100f;
+            var factor = AmountInGrams / 100;
             var n = Product.NutritionPer100g;
 
             return new Nutrition(

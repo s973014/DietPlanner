@@ -1,0 +1,125 @@
+﻿@model Web.Models.Meals.MealEditVm
+@{
+    var products = ViewBag.Products as List<Domain.Entitites.Product> ?? new List<Domain.Entitites.Product>();
+}
+
+<h2>Редактировать блюдо</h2>
+
+<form asp-action="Edit" method="post" id="editMealForm">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Название блюда</label>
+        <input asp-for="Name" class="form-control" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Описание</label>
+        <textarea asp-for="Description" class="form-control" required></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <h4>Ингредиенты</h4>
+    <table class="table" id="ingredientsTable">
+        <thead>
+            <tr>
+                <th>Продукт</th>
+                <th>Граммы</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Ingredients.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <select name="Ingredients[@i].ProductId" class="form-select" required>
+                            <option value="">-- выберите продукт --</option>
+                            @foreach (var p in products)
+                            {
+                                <option value="@p.Id" selected="@(p.Id == Model.Ingredients[i].ProductId)">
+                                    @p.Name
+                                </option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input name="Ingredients[@i].AmountInGrams"
+                               type="number"
+                               min="1"
+                               value="@Model.Ingredients[i].AmountInGrams"
+                               class="form-control"
+                               required />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">✕</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-secondary mb-3" onclick="addIngredient()">Добавить ингредиент</button>
+    <br />
+    <button type="submit" class="btn btn-success">Сохранить</button>
+</form>
+
+@section Scripts {
+    <script>
+        let index = @Model.Ingredients.Count;
+
+        function addIngredient() {
+            const tbody = document.querySelector("#ingredientsTable tbody");
+            tbody.insertAdjacentHTML("beforeend", `
+                <tr>
+                    <td>
+                        <select name="Ingredients[${index}].ProductId" class="form-select" required>
+                            <option value="">-- выберите продукт --</option>
+                            @foreach (var p in products)
+                            {
+                                    <text><option value="@p.Id">@p.Name</option></text>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input name="Ingredients[${index}].AmountInGrams"
+                               type="number"
+                               min="1"
+                               class="form-control"
+                               required />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">✕</button>
+                    </td>
+                </tr>
+            `);
+            index++;
+        }
+
+        document.getElementById("editMealForm").addEventListener("submit", function(e) {
+            const rows = document.querySelectorAll("#ingredientsTable tbody tr");
+
+            if (rows.length === 0) {
+                alert("Добавьте хотя бы один ингредиент!");
+                e.preventDefault();
+                return;
+            }
+
+            let invalid = false;
+
+            rows.forEach(row => {
+                const productSelect = row.querySelector("select[name$='ProductId']");
+                const gramsInput = row.querySelector("input[name$='AmountInGrams']");
+
+                if (!productSelect.value) invalid = true;
+                if (!gramsInput.value || parseFloat(gramsInput.value) <= 0) invalid = true;
+            });
+
+            if (invalid) {
+                alert("Выберите продукт и укажите количество граммов больше 0 для всех ингредиентов!");
+                e.preventDefault();
+            }
+        });
+    </script>
+}

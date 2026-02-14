@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Application.Services
 {
     public class MealService
@@ -40,5 +41,7 @@ namespace Application.Services
             _mealRepository.Update(meal);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        
     }
 }
