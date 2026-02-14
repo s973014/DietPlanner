@@ -13,6 +13,7 @@ namespace Application.Interfaces
         Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken = default);
 
         Task<bool> IsUsedInAnyMealAsync(Guid productId, CancellationToken cancellationToken = default);
+        public Task<List<Product>> GetAllWithAllergyAsync();
 
         Task AddAsync(Product product, CancellationToken cancellationToken = default);
         void Update(Product product);

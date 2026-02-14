@@ -1,0 +1,48 @@
+﻿@model Domain.Entitites.Product
+
+@{
+    ViewData["Title"] = "Редактировать продукт";
+    var allergies = ViewBag.Allergies as List<Domain.Entitites.Allergy>;
+}
+
+<h2>Редактировать продукт</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Название</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Калории</label>
+        <input asp-for="NutritionPer100g.Calories" class="form-control" type="number" step="0.1" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Белки</label>
+        <input asp-for="NutritionPer100g.Proteins" class="form-control" type="number" step="0.1" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Жиры</label>
+        <input asp-for="NutritionPer100g.Fats" class="form-control" type="number" step="0.1" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Углеводы</label>
+        <input asp-for="NutritionPer100g.Carbs" class="form-control" type="number" step="0.1" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Аллергия</label>
+        <select asp-for="AllergyId" class="form-select">
+            <option value="">Без аллергии</option>
+            @foreach (var a in allergies)
+            {
+                <option value="@a.Id" selected="@(Model.AllergyId == a.Id ? "selected" : null)">@a.Name</option>
+            }
+        </select>
+    </div>
+
+    <button class="btn btn-success" type="submit">Сохранить</button>
+    <a class="btn btn-secondary" href="/Products">Отмена</a>
+</form>

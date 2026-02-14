@@ -10,12 +10,15 @@ namespace Domain.Entitites
 {
     public class Product : Entity
     {
-        public string Name { get; private set; }
-        public Nutrition NutritionPer100g { get; private set; }
+        public string Name { get; set; }
+        public Nutrition NutritionPer100g { get; set; } = null!;
 
-        public Guid? AllergyId { get; private set; }
-        public Allergy? Allergy { get; private set; }
-        private Product() { }
+        public Guid? AllergyId { get; set; }
+        public Allergy? Allergy { get; set; }
+        public Product()
+        {
+            NutritionPer100g = new Nutrition();
+        }
 
         public Product(string name, Nutrition nutritionPer100g, Allergy? allergy = null)
         {
@@ -34,7 +37,10 @@ namespace Domain.Entitites
             Allergy = allergy;
             AllergyId = allergy?.Id;
         }
-
+        public void SetNutrition(Nutrition nutrition)
+        {
+            NutritionPer100g = nutrition;
+        }
         public void SetAllergy(Allergy? allergy)
         {
             Allergy = allergy;

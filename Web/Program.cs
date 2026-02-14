@@ -14,6 +14,7 @@ var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
 builder.Services.AddScoped<IMealRepository, MealRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IAllergyRepository, AllergyRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

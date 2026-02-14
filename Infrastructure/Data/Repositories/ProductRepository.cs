@@ -42,6 +42,12 @@ namespace Infrastructure.Data.Repositories
             await _context.Products.AddAsync(product, cancellationToken);
         }
 
+        public async Task<List<Product>> GetAllWithAllergyAsync()
+        {
+            return await _context.Products
+                                 .Include(p => p.Allergy)
+                                 .ToListAsync();
+        }
         public void Update(Product product)
         {
             _context.Products.Update(product);

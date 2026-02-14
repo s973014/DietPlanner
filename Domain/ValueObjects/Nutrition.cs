@@ -9,10 +9,12 @@ namespace Domain.ValueObjects
 
     public class Nutrition
     {
-        public float Calories { get; }
-        public float Proteins { get; }
-        public float Fats { get; }
-        public float Carbs { get; }
+        public float Calories { get; set; }
+        public float Proteins { get; set; }
+        public float Fats { get; set; }
+        public float Carbs { get; set; }
+
+        public Nutrition() { }
 
         public Nutrition(float calories, float proteins, float fats, float carbs)
         {

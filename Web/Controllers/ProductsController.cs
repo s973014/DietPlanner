@@ -2,51 +2,56 @@
 using Domain.Entitites;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Infrastructure.Data.Repositories;
 namespace Web.Controllers
 {
     [Authorize(Roles = "Dietitian")]
     public class ProductsController : Controller
     {
         private readonly IProductRepository _productRepository;
+        private readonly IAllergyRepository _allergyRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ProductsController(IProductRepository productRepository, IUnitOfWork unitOfWork)
+        public ProductsController(
+            IProductRepository productRepository,
+            IAllergyRepository allergyRepository,
+            IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
+            _allergyRepository = allergyRepository;
             _unitOfWork = unitOfWork;
         }
 
-        // ---------- Список продуктов ----------
         public async Task<IActionResult> Index()
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _productRepository.GetAllWithAllergyAsync();
             return View(products);
         }
 
-        // ---------- Создание продукта ----------
-        public IActionResult Create()
+  
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Allergies = await _allergyRepository.GetAllAsync();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
-            if (!ModelState.IsValid)
-                return View(product);
+            
+
 
             await _productRepository.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
-        // ---------- Редактирование продукта ----------
         public async Task<IActionResult> Edit(Guid id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null) return NotFound();
+
+            ViewBag.Allergies = await _allergyRepository.GetAllAsync();
             return View(product);
         }
 
@@ -54,14 +59,16 @@ namespace Web.Controllers
         public async Task<IActionResult> Edit(Product product)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.Allergies = await _allergyRepository.GetAllAsync();
                 return View(product);
+            }
 
             _productRepository.Update(product);
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // ---------- Удаление продукта ----------
         public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -69,6 +76,7 @@ namespace Web.Controllers
             return View(product);
         }
 
+        
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
