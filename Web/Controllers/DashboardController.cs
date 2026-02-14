@@ -19,6 +19,7 @@ namespace Web.Controllers
         public async Task<IActionResult> Index()
         {
             string? userName = "Пользователь";
+            string role = "User";
 
             var jwt = Request.Cookies["jwtToken"];
             if (!string.IsNullOrEmpty(jwt))
@@ -27,6 +28,8 @@ namespace Web.Controllers
                 var token = handler.ReadJwtToken(jwt);
 
                 var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+                var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "role");
+
                 if (userIdClaim != null)
                 {
                     var userId = Guid.Parse(userIdClaim.Value);
@@ -34,13 +37,17 @@ namespace Web.Controllers
                     if (user != null)
                         userName = user.Name;
                 }
+
+                if (roleClaim != null)
+                    role = roleClaim.Value;
             }
 
             ViewData["UserName"] = userName;
+            ViewData["UserRole"] = role;
+
             return View();
         }
 
-        
         public IActionResult Logout()
         {
             Response.Cookies.Delete("jwtToken");

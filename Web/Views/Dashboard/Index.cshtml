@@ -1,12 +1,30 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
     var userName = ViewData["UserName"] ?? "Пользователь";
+    var role = ViewData["UserRole"] ?? "User";
 }
 
 <h2>Добро пожаловать, @userName!</h2>
 
-<div class="mt-3">
+
+
+@if (role.ToString() == "Dietitian")
+{
+    <hr />
+    <h3>Управление диетологом</h3>
+    <div class="d-flex flex-column gap-2 mt-2">
+        <a class="btn btn-outline-primary" href="/Products">CRUD Продукты</a>
+        <a class="btn btn-outline-primary" href="/Meals">CRUD Блюда</a>
+        <a class="btn btn-outline-primary" href="/Substitutions">CRUD Замены продуктов</a>
+        <a class="btn btn-outline-primary" href="/WeeklyPlans">CRUD Недельные планы</a>
+    </div>
+}
+else{
+<div class="mt-3 mb-4">
     <a class="btn btn-primary" href="/Profile/Edit">Редактировать профиль</a>
     <a class="btn btn-success" href="/MealPlan/Select">Выбрать новый недельный план</a>
-    <a class="btn btn-danger" href="/Dashboard/Logout">Выйти</a>
+    
+</div>
+}
+<div class="d-flex flex-column gap-2 mt-2">
+<a class="btn btn-danger" href="/Dashboard/Logout">Выйти</a>
 </div>
