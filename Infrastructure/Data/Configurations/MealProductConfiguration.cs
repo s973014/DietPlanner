@@ -17,19 +17,17 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(x => new { x.MealId, x.ProductId });
 
-            builder.Property(x => x.AmountInGrams)
-                .IsRequired();
+            builder.Property(x => x.AmountInGrams).IsRequired();
 
             builder.HasOne(x => x.Meal)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.MealId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                   .WithMany(x => x.Products)
+                   .HasForeignKey(x => x.MealId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Product)
-                .WithMany()
-                .HasForeignKey(x => x.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                   .WithMany()
+                   .HasForeignKey(x => x.ProductId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 

@@ -12,6 +12,7 @@ namespace Domain.Entitites
     {
         public string Name { get; private set; }
         public Nutrition NutritionPer100g { get; private set; }
+        private Product() { }
 
         public Product(string name, Nutrition nutritionPer100g)
         {

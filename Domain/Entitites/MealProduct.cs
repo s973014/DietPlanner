@@ -10,24 +10,27 @@ namespace Domain.Entitites
     public class MealProduct
     {
         public Guid MealId { get; private set; }
-        public Meal Meal { get; private set; }
-
         public Guid ProductId { get; private set; }
-        public Product Product { get; private set; }
-
         public float AmountInGrams { get; private set; }
 
-        public MealProduct(Meal meal, Product product, float grams)
+        public Meal Meal { get; private set; }
+        public Product Product { get; private set; }
+
+        private MealProduct() { } 
+        public MealProduct(Guid mealId, Guid productId, float grams)
         {
-            Meal = meal;
-            MealId = meal.Id;
-
-            Product = product;
-            ProductId = product.Id;
-
+            MealId = mealId;
+            ProductId = productId;
             AmountInGrams = grams;
         }
-
+        public static MealProduct Create(Meal meal, Product product, float grams)
+        {
+            return new MealProduct(meal.Id, product.Id, grams)
+            {
+                Meal = meal,
+                Product = product
+            };
+        }
         public Nutrition CalculateNutrition()
         {
             var factor = AmountInGrams / 100f;

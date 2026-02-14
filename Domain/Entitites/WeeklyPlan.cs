@@ -16,7 +16,7 @@ namespace Domain.Entitites
         private readonly List<DailyMeal> _dailyMeals = new();
         public IReadOnlyCollection<DailyMeal> DailyMeals => _dailyMeals;
 
-
+        private WeeklyPlan() { }
         public WeeklyPlan(User user)
         {
             Id = Guid.NewGuid();

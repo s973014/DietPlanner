@@ -31,7 +31,10 @@ namespace Domain.Entitites
 
         public void AddProduct(Product product, float grams)
         {
-            _products.Add(new MealProduct(this, product, grams));
+            if (product == null) throw new ArgumentNullException(nameof(product));
+            if (grams <= 0) throw new ArgumentException("Amount must be positive", nameof(grams));
+
+            _products.Add(MealProduct.Create(this, product, grams));
         }
     }
 }

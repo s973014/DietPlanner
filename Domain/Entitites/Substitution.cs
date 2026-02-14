@@ -13,6 +13,7 @@ namespace Domain.Entitites
         public Product SubstituteProduct { get; private set; }
         public string Reason { get; private set; }
 
+        private Substitution() { }
 
         public Substitution(Product original, Product substitute, string reason)
         {
