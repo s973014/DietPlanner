@@ -21,6 +21,12 @@ namespace Domain.ValueObjects
             Fats = fats;
             Carbs = carbs;
         }
+        
+
+        public static Nutrition CreateForTest(float calories, float proteins, float fats, float carbs)
+        {
+            return new Nutrition(calories, proteins, fats, carbs);
+        }
 
         public static Nutrition operator +(Nutrition a, Nutrition b)
             => new(
@@ -30,4 +36,6 @@ namespace Domain.ValueObjects
                 a.Carbs + b.Carbs
             );
     }
+
+
 }

@@ -20,5 +20,12 @@ namespace Domain.Entitites
             Name = name;
             NutritionPer100g = nutritionPer100g;
         }
+
+        public Product(Guid id, string name, Nutrition nutrition)
+        {
+            Id = id;
+            Name = name;
+            NutritionPer100g = nutrition;
+        }
     }
 }

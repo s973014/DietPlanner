@@ -13,7 +13,7 @@ namespace Domain.Entitites
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-        private readonly List<MealProduct> _products = new();
+        private List<MealProduct> _products = new();
         public IReadOnlyCollection<MealProduct> Products => _products;
 
         public Nutrition TotalNutrition =>
@@ -27,6 +27,13 @@ namespace Domain.Entitites
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
+        }
+
+        public Meal(Guid id, string name)
+        {
+            Id = id;
+            Name = name;
+            _products = new List<MealProduct>();
         }
 
         public void AddProduct(Product product, float grams)
