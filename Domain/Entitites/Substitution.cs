@@ -9,17 +9,33 @@ namespace Domain.Entitites
 {
     public class Substitution : Entity
     {
-        public Product OriginalProduct { get; private set; }
-        public Product SubstituteProduct { get; private set; }
+        public Meal OriginalMeal { get; private set; }
+        public Meal SubstituteMeal { get; private set; }
+
+
+        public Guid OriginalMealId { get; private set; }
+        public Guid SubstituteMealId { get; private set; }
+
         public string Reason { get; private set; }
 
         private Substitution() { }
 
-        public Substitution(Product original, Product substitute, string reason)
+        public Substitution(Meal original, Meal substitute, string reason)
         {
             Id = Guid.NewGuid();
-            OriginalProduct = original;
-            SubstituteProduct = substitute;
+
+            OriginalMeal = original;
+            SubstituteMeal = substitute;
+
+            OriginalMealId = original.Id;
+            SubstituteMealId = substitute.Id;
+
+            Reason = reason;
+        }
+
+        public void Update(Guid substituteMealId, string reason)
+        {
+            SubstituteMealId = substituteMealId;
             Reason = reason;
         }
     }

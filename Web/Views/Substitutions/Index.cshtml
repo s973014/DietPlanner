@@ -1,0 +1,34 @@
+﻿@model List<Application.Interfaces.SubstitutionListVm>
+
+@{
+    ViewData["Title"] = "Замены блюд";
+}
+
+<h2>Список замен</h2>
+
+<a class="btn btn-success mb-3" asp-action="Create">Добавить замену</a>
+<a class="btn btn-secondary" href="/Dashboard">Назад</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Оригинальное блюдо</th>
+            <th>Замещающее блюдо</th>
+            <th>Причина</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sub in Model)
+        {
+            <tr>
+                <td>@sub.OriginalMeal</td>
+                <td>@sub.SubstituteMeal</td>
+                <td>@sub.Reason</td>
+                <td>
+                    <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@sub.Id">Изменить</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@sub.Id">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

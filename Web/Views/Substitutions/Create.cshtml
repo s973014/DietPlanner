@@ -1,0 +1,45 @@
+﻿@model Web.Controllers.SubstitutionEditVm
+
+@{
+    ViewData["Title"] = "Создать замену";
+    var meals = ViewBag.Meals as List<Domain.Entitites.Meal> ?? new List<Domain.Entitites.Meal>();
+}
+
+<h2>Добавить замену блюда</h2>
+<a class="btn btn-secondary" href="/Substitutions">Назад</a>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Оригинальное блюдо</label>
+        <select asp-for="OriginalProductId" class="form-select" required>
+            <option value="">-- выберите блюдо --</option>
+            @foreach (var meal in meals)
+            {
+                <option value="@meal.Id">@meal.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Замещающее блюдо</label>
+        <select asp-for="SubstituteProductId" class="form-select" required>
+            <option value="">-- выберите блюдо --</option>
+            @foreach (var meal in meals)
+            {
+                <option value="@meal.Id">@meal.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Причина</label>
+        <input asp-for="Reason" class="form-control" required />
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Сохранить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отмена</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
