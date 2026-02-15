@@ -20,14 +20,15 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.Reason)
                 .IsRequired();
 
-            builder.HasOne(x => x.OriginalProduct)
+
+            builder.HasOne(x => x.OriginalMeal)
                 .WithMany()
-                .HasForeignKey("ProductId")
+                .HasForeignKey(x => x.OriginalMealId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.SubstituteProduct)
+            builder.HasOne(x => x.SubstituteMeal)
                 .WithMany()
-                .HasForeignKey("SubstituteId")
+                .HasForeignKey(x => x.SubstituteMealId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

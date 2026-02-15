@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tests.TestDoubles
 {
-    public class InMemoryMealRepository : IMealRepository
+    public class InMemoryMealRepository
     {
         private readonly List<Meal> _meals = new();
 

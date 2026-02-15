@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tests.TestDoubles
 {
-    public class InMemoryProductRepository : IProductRepository
+    public class InMemoryProductRepository
     {
         private readonly List<Product> _products = new();
         private readonly HashSet<Guid> _usedProducts = new();
