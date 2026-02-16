@@ -1,0 +1,197 @@
+﻿@model Web.Controllers.WeeklyPlanEditVm
+@using System.Text.Json
+@using Domain.Enums
+
+@{
+    ViewData["Title"] = "Редактировать недельный план";
+
+    string[] weekDays =
+    {
+        "Понедельник","Вторник","Среда",
+        "Четверг","Пятница","Суббота","Воскресенье"
+    };
+
+    string[] mealTypeNames =
+    {
+        "Завтрак","Обед","Ужин","Перекус"
+    };
+}
+
+<h2>@ViewData["Title"]</h2>
+<a class="btn btn-secondary" href="/WeeklyPlans">Назад</a>
+<form asp-action="Edit" method="post" id="weeklyPlanForm">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Выберите день недели</label>
+        <select id="daySelector" class="form-select mb-2">
+            @for (int i = 0; i < weekDays.Length; i++)
+            {
+                <option value="@i">@weekDays[i]</option>
+            }
+        </select>
+
+        <button type="button"
+                class="btn btn-secondary mb-2"
+                onclick="addMealRow()">
+            Добавить приём пищи
+        </button>
+    </div>
+
+    <table class="table table-bordered text-center">
+        <thead class="table-light">
+            <tr>
+                <th>День</th>
+                <th>Приём пищи</th>
+                <th>Блюдо</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="dailyMealsBody"></tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success mt-3">
+        Сохранить изменения
+    </button>
+</form>
+
+@section Scripts {
+<script>
+    const meals = @Html.Raw(JsonSerializer.Serialize(Model.Meals));
+    const weekDays = @Html.Raw(JsonSerializer.Serialize(weekDays));
+    const mealTypes = @Html.Raw(JsonSerializer.Serialize(mealTypeNames));
+
+    let index = 0;
+
+    function addMealRow(dayIndex = null, mealTypeIndex = "", mealId = "") {
+        const tbody = document.getElementById("dailyMealsBody");
+
+        if (dayIndex === null) {
+            dayIndex = parseInt(document.getElementById("daySelector").value);
+        }
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${weekDays[dayIndex]}</td>
+            <td>
+                <select name="DailyMeals[${index}].MealType"
+                        class="form-select meal-type"
+                        required>
+                    <option value="">-- Выберите --</option>
+                    ${mealTypes.map((mt, i) =>
+                        `<option value="${i}" ${i === mealTypeIndex ? "selected" : ""}>
+                            ${mt}
+                        </option>`
+                    ).join("")}
+                </select>
+            </td>
+            <td>
+                <select name="DailyMeals[${index}].MealId"
+                        class="form-select"
+                        required>
+                    <option value="">-- Выберите блюдо --</option>
+                    ${meals.map(m =>
+                        `<option value="${m.Id}" ${m.Id === mealId ? "selected" : ""}>
+                            ${m.Name}
+                        </option>`
+                    ).join("")}
+                </select>
+                <input type="hidden"
+                       name="DailyMeals[${index}].DayIndex"
+                       class="day-index"
+                       value="${dayIndex}" />
+            </td>
+            <td>
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="removeMealRow(this)">
+                    ✕
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+        index++;
+    }
+
+    function removeMealRow(button) {
+        button.closest('tr').remove();
+        reindexDailyMeals();
+    }
+
+    function reindexDailyMeals() {
+        const rows = document.querySelectorAll("#dailyMealsBody tr");
+        rows.forEach((row, newIndex) => {
+            row.querySelectorAll("select, input").forEach(el => {
+                if (!el.name) return;
+                el.name = el.name.replace(/DailyMeals\[\d+]/, `DailyMeals[${newIndex}]`);
+            });
+        });
+        index = rows.length;
+    }
+
+
+    function validateUniqueMealTypesPerDay() {
+        const rows = document.querySelectorAll("#dailyMealsBody tr");
+        const map = {};
+        let isValid = true;
+
+        rows.forEach(row => row.classList.remove("table-danger"));
+
+        for (const row of rows) {
+            const dayIndex = row.querySelector(".day-index").value;
+            const mealType = row.querySelector(".meal-type").value;
+
+            if (!mealType) continue;
+
+            if (!map[dayIndex]) {
+                map[dayIndex] = new Set();
+            }
+
+            if (map[dayIndex].has(mealType)) {
+                row.classList.add("table-danger");
+                isValid = false;
+            } else {
+                map[dayIndex].add(mealType);
+            }
+        }
+
+        if (!isValid) {
+            alert(
+                "Ошибка: в одном дне недели не может быть два одинаковых приёма пищи " +
+                "(например, два завтрака)."
+            );
+        }
+
+        return isValid;
+    }
+
+    document.getElementById("weeklyPlanForm")
+        .addEventListener("submit", function (e) {
+
+            reindexDailyMeals();
+
+            if (!validateUniqueMealTypesPerDay()) {
+                e.preventDefault();
+            }
+        });
+
+    const existingMeals = @Html.Raw(JsonSerializer.Serialize(
+        Model.DailyMeals
+            .OrderBy(dm => dm.DayIndex)
+            .ThenBy(dm => dm.MealType)
+            .Select(dm => new {
+                dm.DayIndex,
+                MealTypeIndex = (int)dm.MealType,
+                dm.MealId
+            })
+    ));
+
+    existingMeals.forEach(dm => {
+        addMealRow(dm.DayIndex, dm.MealTypeIndex, dm.MealId);
+    });
+
+    if (existingMeals.length === 0) {
+        addMealRow();
+    }
+</script>
+}

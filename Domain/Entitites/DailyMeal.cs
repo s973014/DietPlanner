@@ -12,8 +12,12 @@ namespace Domain.Entitites
     {
         public int DayIndex { get; private set; }
         public MealType MealType { get; private set; }
+
+        public Guid MealId { get; private set; }
         public Meal Meal { get; private set; }
-        public bool IsEaten { get; private set; }
+
+        public Guid WeeklyPlanId { get; private set; }
+        public WeeklyPlan WeeklyPlan { get; private set; }
 
         private DailyMeal() { }
 
@@ -23,11 +27,13 @@ namespace Domain.Entitites
             DayIndex = dayIndex;
             MealType = mealType;
             Meal = meal;
+            MealId = meal.Id;
         }
 
-        public void MarkAsEaten()
+        public void SetWeeklyPlan(WeeklyPlan plan)
         {
-            IsEaten = true;
+            WeeklyPlan = plan;
+            WeeklyPlanId = plan.Id;
         }
     }
 }
