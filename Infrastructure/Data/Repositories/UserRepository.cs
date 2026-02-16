@@ -21,8 +21,8 @@ namespace Infrastructure.Data.Repositories
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+            .Include(u => u.Allergies)
+            .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)

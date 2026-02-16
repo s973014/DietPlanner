@@ -41,6 +41,19 @@ namespace Domain.Entitites
             Goal = goal;
         }
 
+        public void SetPassword(string hashedPassword)
+        {
+            if (string.IsNullOrWhiteSpace(hashedPassword))
+                throw new ArgumentException("Пароль не может быть пустым", nameof(hashedPassword));
+
+            PasswordHash = hashedPassword;
+        }
+
+        public void ClearAllergies()
+        {
+            _allergies.Clear();
+        }
+
         public void AddAllergy(Allergy allergy)
         {
             if (!_allergies.Contains(allergy))
