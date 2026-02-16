@@ -14,19 +14,15 @@ namespace Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<WeeklyPlan> builder)
         {
             builder.ToTable("weekly_plans");
+            builder.HasKey(w => w.Id);
 
-            builder.HasKey(x => x.Id);
+            builder.Property(w => w.CreatedAt)
+                   .IsRequired();
 
-            builder.Property(x => x.IsCompleted)
-                .IsRequired();
-
-            builder.HasOne(x => x.User)
-                .WithMany()
-                .HasForeignKey("UserId");
-
-            builder.HasMany(x => x.DailyMeals)
-                .WithOne()
-                .HasForeignKey("WeeklyPlanId");
+            builder.HasMany(w => w.DailyMeals)
+                   .WithOne(dm => dm.WeeklyPlan)
+                   .HasForeignKey(dm => dm.WeeklyPlanId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

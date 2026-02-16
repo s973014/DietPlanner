@@ -17,19 +17,25 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.DayIndex).IsRequired();
+            builder.Property(x => x.DayIndex)
+                   .IsRequired();
 
             builder.Property(x => x.MealType)
-                .HasConversion<string>()
-                .IsRequired();
+                   .HasConversion<string>()
+                   .IsRequired();
 
-            builder.Property(x => x.IsEaten)
-                .IsRequired();
 
             builder.HasOne(x => x.Meal)
-                .WithMany()
-                .HasForeignKey("MealId");
+                   .WithMany()
+                   .HasForeignKey("MealId")
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.WeeklyPlan)
+                   .WithMany(w => w.DailyMeals)
+                   .HasForeignKey(x => x.WeeklyPlanId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
 
 }

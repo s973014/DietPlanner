@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260215135143_RemoveWeeklyPlanIsComplited")]
+    partial class RemoveWeeklyPlanIsComplited
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +72,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("WeeklyPlanId")
+                    b.Property<Guid?>("WeeklyPlanId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -242,15 +245,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entitites.WeeklyPlan", "WeeklyPlan")
+                    b.HasOne("Domain.Entitites.WeeklyPlan", null)
                         .WithMany("DailyMeals")
                         .HasForeignKey("WeeklyPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Meal");
-
-                    b.Navigation("WeeklyPlan");
                 });
 
             modelBuilder.Entity("Domain.Entitites.MealProduct", b =>
