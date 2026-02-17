@@ -37,6 +37,10 @@ namespace Infrastructure.Data.Configurations
                 {
                     j.ToTable("user_allergies");
                 });
+            builder.HasOne(x => x.WeeklyPlan)
+           .WithMany()
+           .HasForeignKey("WeeklyPlanId")
+           .OnDelete(DeleteBehavior.SetNull);
         }
     }
 

@@ -13,7 +13,7 @@ namespace Domain.Entitites
         public string Name { get; set; }
         public string Description { get; set; }
 
-        private List<MealProduct> _products = new();
+        public List<MealProduct> _products = new();
         public ICollection<MealProduct> Products => _products;
 
         public Nutrition TotalNutrition =>
@@ -44,6 +44,22 @@ namespace Domain.Entitites
             if (grams <= 0) throw new ArgumentException("Amount must be positive", nameof(grams));
 
             _products.Add(MealProduct.Create(this, product, grams));
+        }
+
+        public bool ContainsAllergens(List<Allergy> userAllergies)
+        {
+            if (userAllergies == null || !userAllergies.Any())
+                return false;
+
+            foreach (var mp in _products)
+            {
+                if (mp.Product.AllergyId != null && userAllergies.Any(a => a.Id == mp.Product.AllergyId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

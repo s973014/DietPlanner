@@ -42,6 +42,15 @@ namespace Infrastructure.Data.Repositories
 
         public void Remove(Substitution substitution)
             => _context.Substitutions.Remove(substitution);
+        public async Task<Substitution?> GetByOriginalMealIdAsync(Guid originalMealId)
+        {
+            return await _context.Substitutions
+                .Include(s => s.SubstituteMeal)
+                    .ThenInclude(m => m.Products)
+                        .ThenInclude(mp => mp.Product)
+                .Include(s => s.OriginalMeal)
+                .FirstOrDefaultAsync(s => s.OriginalMealId == originalMealId);
+        }
     }
 
 }

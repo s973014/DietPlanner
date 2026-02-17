@@ -30,7 +30,10 @@ namespace Infrastructure.Data.Repositories
         {
             return await _context.WeeklyPlans
                 .Include(w => w.DailyMeals)
-                .ThenInclude(dm => dm.Meal)
+                    .ThenInclude(dm => dm.Meal)
+                        .ThenInclude(m => m.Products)
+                            .ThenInclude(mp => mp.Product)
+                                .ThenInclude(p => p.NutritionPer100g)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
@@ -57,12 +60,29 @@ namespace Infrastructure.Data.Repositories
         }
 
         public async Task<WeeklyPlan?> GetByIdWithMealsAsync(Guid id)
-{
+        {
     return await _context.WeeklyPlans
         .Include(w => w.DailyMeals)
         .ThenInclude(dm => dm.Meal)
         .FirstOrDefaultAsync(w => w.Id == id);
-}
+        }
+
+        public async Task<List<WeeklyPlan>> GetAllWithMealsAsync()
+        {
+            return await _context.WeeklyPlans
+                .Include(wp => wp.DailyMeals)
+                    .ThenInclude(dm => dm.Meal)
+                        .ThenInclude(m => m.Products)
+                            .ThenInclude(mp => mp.Product)
+                                .ThenInclude(p => p.NutritionPer100g)
+                .Include(wp => wp.DailyMeals)
+                    .ThenInclude(dm => dm.Meal)
+                        .ThenInclude(m => m.Products)
+                            .ThenInclude(mp => mp.Product)
+                                .ThenInclude(p => p.Allergy)
+                .AsSplitQuery()
+                .ToListAsync();
+        }
 
     }
 }

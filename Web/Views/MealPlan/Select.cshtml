@@ -1,0 +1,102 @@
+﻿@model Web.Controllers.MealPlanSelectVm
+
+@{
+    ViewData["Title"] = "Выбор недельного плана";
+
+    string[] weekDays =
+    {
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    };
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+@if (!Model.CanSelectPlan)
+{
+    <div class="alert alert-warning">
+        <strong>Профиль не заполнен.</strong><br />
+        Укажите вес, рост, уровень активности и цель, чтобы выбрать план.
+    </div>
+
+    <a class="btn btn-primary" href="/Profile/Edit">
+        Редактировать профиль
+    </a>
+}
+else
+{
+    <form asp-action="Select" method="post">
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+
+            @foreach (var plan in Model.WeeklyPlans)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">@plan.Title</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            @for (int day = 0; day < 7; day++)
+                            {
+                                var mealsForDay = plan.Days
+                                .Where(dm => dm.DayOfWeek == day)
+                                .ToList();
+
+                                if (!mealsForDay.Any())
+                                    continue;
+
+                                <div class="mb-3">
+                                    <h6 class="text-primary">@weekDays[day]</h6>
+
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var meal in mealsForDay)
+                                        {
+                                            <li class="list-group-item">
+                                                @if (meal.IsSubstituted)
+                                                {
+                                                    <div class="alert alert-warning p-2 mb-2">
+                                                        <strong>@meal.MealType:</strong>
+                                                        @meal.MealName
+                                                        <br />
+                                                        <small class="text-muted">🔁 Это заменённое блюдо</small>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div>
+                                                        <strong>@meal.MealType:</strong>
+                                                        @meal.MealName
+                                                    </div>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="card-footer text-center">
+                            <button type="submit"
+                                    name="planId"
+                                    value="@plan.PlanId"
+                                    class="btn btn-success w-100">
+                                Выбрать этот план
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </form>
+}

@@ -22,6 +22,11 @@ namespace Domain.Entitites
 
         private readonly List<Allergy> _allergies = new();
         public IReadOnlyCollection<Allergy> Allergies => _allergies;
+        public Guid? WeeklyPlanId { get; private set; }
+        public WeeklyPlan? WeeklyPlan { get; private set; }
+
+        private readonly List<DailyMealProgress> _mealProgresses = new();
+        public IReadOnlyCollection<DailyMealProgress> MealProgresses => _mealProgresses;
 
         private User() { }
 
@@ -58,6 +63,32 @@ namespace Domain.Entitites
         {
             if (!_allergies.Contains(allergy))
                 _allergies.Add(allergy);
+        }
+
+        public void AssignWeeklyPlan(WeeklyPlan plan)
+        {
+            WeeklyPlan = plan;
+            WeeklyPlanId = plan.Id;
+        }
+        public void SetWeeklyPlan(Guid weeklyPlanId)
+        {
+            WeeklyPlanId = weeklyPlanId;
+        }
+
+        public void RemoveWeeklyPlan()
+        {
+            WeeklyPlan = null;
+            WeeklyPlanId = null;
+        }
+
+        public void AddDailyMealProgress(DailyMealProgress progress)
+        {
+            _mealProgresses.Add(progress);
+        }
+
+        public void ClearDailyMealProgress()
+        {
+            _mealProgresses.Clear();
         }
     }
 }

@@ -53,5 +53,12 @@ namespace Infrastructure.Data.Repositories
         {
             _context.Users.Remove(user);
         }
+
+        public async Task<User?> GetByIdWithAllergiesAsync(Guid id)
+        {
+            return await _context.Users
+                .Include(u => u.Allergies)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
     }
 }

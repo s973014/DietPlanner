@@ -13,6 +13,7 @@ namespace Application.Interfaces
         Task<Substitution?> GetByIdAsync(Guid id);
         Task AddAsync(Substitution substitution);
         void Remove(Substitution substitution);
+        Task<Substitution?> GetByOriginalMealIdAsync(Guid originalMealId);
     }
 
     public class SubstitutionListVm

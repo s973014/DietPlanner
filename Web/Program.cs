@@ -19,6 +19,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISubstitutionRepository, SubstitutionRepository>();
 builder.Services.AddScoped<IWeeklyPlanRepository, WeeklyPlanRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<MealService>();

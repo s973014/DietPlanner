@@ -1,11 +1,16 @@
 ﻿@{
     var userName = ViewData["UserName"] ?? "Пользователь";
     var role = ViewData["UserRole"] ?? "User";
+
+    float? weight = ViewData["UserWeight"] as float?;
+    float? height = ViewData["UserHeight"] as float?;
+    Domain.Enums.ActivityLevel? activity = ViewData["UserActivityLevel"] as Domain.Enums.ActivityLevel?;
+    Domain.Enums.GoalType? goal = ViewData["UserGoal"] as Domain.Enums.GoalType?;
+
+    bool canSelectPlan = weight.HasValue && height.HasValue && activity.HasValue && goal.HasValue;
 }
 
 <h2>Добро пожаловать, @userName!</h2>
-
-
 
 @if (role.ToString() == "Dietitian")
 {
@@ -18,13 +23,22 @@
         <a class="btn btn-outline-primary" href="/WeeklyPlans">Недельные планы</a>
     </div>
 }
-else{
-<div class="mt-3 mb-4">
-    <a class="btn btn-primary" href="/Profile/Edit">Редактировать профиль</a>
-    <a class="btn btn-success" href="/MealPlan/Select">Выбрать новый недельный план</a>
-    
-</div>
+else
+{
+    <div class="mt-3 mb-4 d-flex flex-column gap-2">
+        <a class="btn btn-primary" href="/Profile/Edit">Редактировать профиль</a>
+
+        @if (canSelectPlan)
+        {
+            <a class="btn btn-success" href="/MealPlan/Select">Выбрать новый недельный план</a>
+        }
+        else
+        {
+            <button class="btn btn-success" disabled title="Сначала заполните профиль">Выбрать новый недельный план</button>
+        }
+    </div>
 }
+
 <div class="d-flex flex-column gap-2 mt-2">
-<a class="btn btn-danger" href="/Dashboard/Logout">Выйти</a>
+    <a class="btn btn-danger" href="/Dashboard/Logout">Выйти</a>
 </div>

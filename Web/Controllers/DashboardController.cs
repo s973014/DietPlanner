@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.Entitites;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,12 +22,13 @@ namespace Web.Controllers
             string? userName = "Пользователь";
             string role = "User";
 
+
             var jwt = Request.Cookies["jwtToken"];
             if (!string.IsNullOrEmpty(jwt))
             {
                 var handler = new JwtSecurityTokenHandler();
                 var token = handler.ReadJwtToken(jwt);
-
+                
                 var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
                 var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "role");
 
@@ -35,7 +37,15 @@ namespace Web.Controllers
                     var userId = Guid.Parse(userIdClaim.Value);
                     var user = await _userRepository.GetByIdAsync(userId);
                     if (user != null)
+                    {
                         userName = user.Name;
+                        ViewData["UserWeight"] = user.Weight;
+                        ViewData["UserHeight"] = user.Height;
+                        ViewData["UserActivityLevel"] = user.ActivityLevel;
+                        ViewData["UserGoal"] = user.Goal;
+                    }
+                        
+                    
                 }
 
                 if (roleClaim != null)
@@ -44,6 +54,8 @@ namespace Web.Controllers
 
             ViewData["UserName"] = userName;
             ViewData["UserRole"] = role;
+
+            
 
             return View();
         }

@@ -19,6 +19,9 @@ namespace Domain.Entitites
         public Guid WeeklyPlanId { get; private set; }
         public WeeklyPlan WeeklyPlan { get; private set; }
 
+        private readonly List<DailyMealProgress> _progresses = new();
+        public IReadOnlyCollection<DailyMealProgress> Progresses => _progresses;
+
         private DailyMeal() { }
 
         public DailyMeal(int dayIndex, MealType mealType, Meal meal)
