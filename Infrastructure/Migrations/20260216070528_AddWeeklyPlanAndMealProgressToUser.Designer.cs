@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216070528_AddWeeklyPlanAndMealProgressToUser")]
+    partial class AddWeeklyPlanAndMealProgressToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,7 +293,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entitites.DailyMealProgress", b =>
                 {
                     b.HasOne("Domain.Entitites.DailyMeal", "DailyMeal")
-                        .WithMany("Progresses")
+                        .WithMany()
                         .HasForeignKey("DailyMealId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -301,7 +304,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Entitites.User", "User")
-                        .WithMany("MealProgresses")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -403,19 +406,9 @@ namespace Infrastructure.Migrations
                     b.Navigation("WeeklyPlan");
                 });
 
-            modelBuilder.Entity("Domain.Entitites.DailyMeal", b =>
-                {
-                    b.Navigation("Progresses");
-                });
-
             modelBuilder.Entity("Domain.Entitites.Meal", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Domain.Entitites.User", b =>
-                {
-                    b.Navigation("MealProgresses");
                 });
 
             modelBuilder.Entity("Domain.Entitites.WeeklyPlan", b =>
