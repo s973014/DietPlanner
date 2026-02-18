@@ -22,7 +22,7 @@ namespace Domain.Entitites
 
         private readonly List<Allergy> _allergies = new();
         public IReadOnlyCollection<Allergy> Allergies => _allergies;
-        public Guid? WeeklyPlanId { get; private set; }
+        public Guid? WeeklyPlanId { get; set; }
         public WeeklyPlan? WeeklyPlan { get; private set; }
 
         private readonly List<DailyMealProgress> _mealProgresses = new();

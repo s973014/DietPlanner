@@ -60,5 +60,24 @@ namespace Infrastructure.Data.Repositories
                 .Include(u => u.Allergies)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task<User?> GetByIdWithWeeklyPlanAsync(Guid id)
+        {
+            return await _context.Users
+                .Include(u => u.WeeklyPlan)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task ClearWeeklyPlanAsync(Guid userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return;
+
+            user.WeeklyPlanId = null;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

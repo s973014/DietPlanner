@@ -17,6 +17,7 @@ namespace Application.Interfaces
         public IQueryable<WeeklyPlan> GetAllAsyncTracked();
         public Task<WeeklyPlan?> GetByIdWithMealsAsync(Guid id);
         public Task<List<WeeklyPlan>> GetAllWithMealsAsync();
+        Task<WeeklyPlan?> GetByIdWithDailyMealsAsync(Guid id);
     }
 
     public class WeeklyPlanPreviewVm

@@ -17,5 +17,7 @@ namespace Application.Interfaces
         Task AddAsync(User user, CancellationToken cancellationToken = default);
         void Update(User user);
         void Remove(User user);
+        Task<User?> GetByIdWithWeeklyPlanAsync(Guid id);
+        Task ClearWeeklyPlanAsync(Guid userId);
     }
 }

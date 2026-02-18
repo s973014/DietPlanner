@@ -24,6 +24,7 @@ namespace Infrastructure.Data
         public DbSet<MealProduct> MealProducts => Set<MealProduct>();
         public DbSet<DailyMeal> DailyMeals => Set<DailyMeal>();
         public DbSet<Substitution> Substitutions => Set<Substitution>();
+        public DbSet<DailyMealProgress> Progresses => Set<DailyMealProgress>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

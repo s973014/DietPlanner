@@ -84,5 +84,16 @@ namespace Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<WeeklyPlan?> GetByIdWithDailyMealsAsync(Guid id)
+        {
+            return await _context.WeeklyPlans
+                .Include(wp => wp.DailyMeals)
+                    .ThenInclude(dm => dm.Meal)
+                        .ThenInclude(m => m.Products)
+                            .ThenInclude(mp => mp.Product)
+                                .ThenInclude(p => p.NutritionPer100g)
+                .FirstOrDefaultAsync(wp => wp.Id == id);
+        }
+
     }
 }
