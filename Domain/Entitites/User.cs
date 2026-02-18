@@ -24,6 +24,7 @@ namespace Domain.Entitites
         public IReadOnlyCollection<Allergy> Allergies => _allergies;
         public Guid? WeeklyPlanId { get; set; }
         public WeeklyPlan? WeeklyPlan { get; private set; }
+        public int CurrentPlanDay { get; set; } = 0;
 
         private readonly List<DailyMealProgress> _mealProgresses = new();
         public IReadOnlyCollection<DailyMealProgress> MealProgresses => _mealProgresses;
