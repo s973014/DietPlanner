@@ -31,6 +31,10 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.Goal)
                 .HasConversion<string>();
 
+            builder.Property(x => x.CurrentPlanDay)
+               .IsRequired()
+               .HasDefaultValue(0);
+
             builder.HasMany(x => x.Allergies)
                 .WithMany()
                 .UsingEntity(j =>

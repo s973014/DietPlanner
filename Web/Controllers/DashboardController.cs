@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entitites;
+using Domain.ValueObjects;
 using Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace Web.Controllers
             _progressRepository = progressRepository;
         }
 
-        public async Task<IActionResult> Index(int day = 0)
+        public async Task<IActionResult> Index(int? day = null)
         {
             var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr))
@@ -48,19 +49,28 @@ namespace Web.Controllers
             var plan = await _weeklyPlanRepository
                 .GetByIdWithDailyMealsAsync(user.WeeklyPlanId.Value);
 
+            var currentDay = day ?? user.CurrentPlanDay;
+
+            
+            if (day.HasValue && day.Value != user.CurrentPlanDay)
+            {
+                user.CurrentPlanDay = day.Value;
+                await _userRepository.UpdateAsync(user);
+            }
+
             var dailyMeals = plan.DailyMeals
-                .Where(dm => dm.DayIndex == day)
+                .Where(dm => dm.DayIndex == currentDay)
                 .OrderBy(dm => dm.MealType)
                 .ToList();
 
             var progress = await _progressRepository
-                .GetByUserAndDayAsync(user.Id, plan.Id, day);
+                .GetByUserAndDayAsync(user.Id, plan.Id, currentDay);
 
             var vm = new DashboardPlanVm
             {
                 WeeklyPlanId = plan.Id,
-                DayIndex = day,
-                DayName = GetDayName(day),
+                DayIndex = currentDay,
+                DayName = GetDayName(currentDay),
                 Meals = dailyMeals.Select(dm =>
                 {
                     var p = progress.FirstOrDefault(x => x.DailyMealId == dm.Id);
@@ -103,10 +113,26 @@ namespace Web.Controllers
             var userId = Guid.Parse(userIdStr);
 
 
+            var report = await _progressRepository.BuildFullReportAsync(userId);
+
+            await _userRepository.ClearWeeklyPlanAsync(userId);
+
+            return PartialView("_DashboardReport", report);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelWeeklyPlan()
+        {
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+
+            await _progressRepository.ClearWeeklyPlanProgressAsync(userId);
+
+
             await _userRepository.ClearWeeklyPlanAsync(userId);
 
             return RedirectToAction(nameof(Index));
         }
+
 
         public IActionResult Logout()
         {
@@ -125,6 +151,8 @@ namespace Web.Controllers
             6 => "Воскресенье",
             _ => ""
         };
+
+
     }
 
     public class DashboardPlanVm
@@ -155,6 +183,11 @@ namespace Web.Controllers
         public Guid DailyMealId { get; set; }
         public bool IsEaten { get; set; }
     }
+
+    
+
+    
+
 
 
 }

@@ -10,6 +10,22 @@
     Domain.Enums.GoalType? goal = ViewData["UserGoal"] as Domain.Enums.GoalType?;
 
     bool canSelectPlan = weight.HasValue && height.HasValue && activity.HasValue && goal.HasValue;
+
+    var mealTypeNames = new Dictionary<string, string>
+    {
+        { "Breakfast", "Завтрак" },
+        { "Lunch", "Обед" },
+        { "Dinner", "Ужин" },
+        { "Snack", "Перекус" }
+    };
+
+    var mealOrder = new List<string>
+    {
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+    };
 }
 
 <h2>Добро пожаловать, @userName!</h2>
@@ -32,12 +48,25 @@ else
 
         @if (canSelectPlan)
         {
-            <a class="btn btn-success" href="/MealPlan/Select">Выбрать новый недельный план</a>
+            if (Model != null && Model.WeeklyPlanId != Guid.Empty)
+            {
+                <form id="cancel-plan-form" method="post" asp-action="CancelWeeklyPlan">
+                    <button type="submit" class="btn btn-danger">
+                        Отменить текущий недельный план
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn-success" href="/MealPlan/Select">
+                    Выбрать новый недельный план
+                </a>
+            }
         }
         else
         {
-            <button class="btn btn-success" disabled>
-                Сначала заполните профиль
+            <button class="btn btn-success" disabled title="Сначала заполните профиль">
+                Выбрать новый недельный план
             </button>
         }
     </div>
@@ -55,10 +84,11 @@ else
 
         <div class="card-body">
             <ul class="list-group">
-                @foreach (var meal in Model.Meals)
+                @foreach (var meal in Model.Meals
+                            .OrderBy(m => mealOrder.IndexOf(m.MealType)))
                 {
                     <li class="list-group-item d-flex align-items-center
-                                @(meal.IsSubstituted ? "list-group-item-warning" : "")">
+                                        @(meal.IsSubstituted ? "list-group-item-warning" : "")">
 
                         <input type="checkbox"
                                class="form-check-input me-3 meal-checkbox"
@@ -66,7 +96,7 @@ else
                                @(meal.IsEaten ? "checked" : "") />
 
                         <div>
-                            <strong>@meal.MealType</strong><br />
+                            <strong>@mealTypeNames.GetValueOrDefault(meal.MealType, meal.MealType)</strong><br />
                             @meal.MealName
 
                             @if (meal.IsSubstituted)
@@ -91,11 +121,11 @@ else
             }
             else
             {
-                <form asp-action="FinishPlan" method="post">
-                    <button type="submit" class="btn btn-success">
-                        Сформировать отчёт
-                    </button>
-                </form>
+                <button type="button"
+                        class="btn btn-success"
+                        onclick="finishPlan()">
+                    Сформировать отчёт
+                </button>
             }
         </div>
     </div>
@@ -108,7 +138,7 @@ else
 @section Scripts
 {
     <script>
-            document.addEventListener('change', function (e) {
+        document.addEventListener('change', function (e) {
             if (!e.target.classList.contains('meal-checkbox')) return;
 
             fetch('/Dashboard/ToggleMeal', {
@@ -134,6 +164,17 @@ else
                     document.querySelector('#plan-container')
                         .replaceWith(newPlan);
                 });
+        }
+
+        function finishPlan() {
+            fetch('/Dashboard/FinishPlan', {
+                method: 'POST'
+            })
+            .then(r => r.text())
+            .then(html => {
+                document.querySelector('#plan-container').remove();
+                document.body.insertAdjacentHTML('beforeend', html);
+            });
         }
     </script>
 }

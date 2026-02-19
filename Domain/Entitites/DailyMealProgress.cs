@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,45 @@ namespace Domain.Entitites
         {
             ReplacementMealId = replacementMealId;
         }
+    }
+
+    public class DashboardReportVm
+    {
+        public string Title { get; set; } = "Подробный отчёт по недельному плану";
+
+        public List<ReportDayVm> Days { get; set; } = new();
+
+        public Nutrition PlannedTotal { get; set; } = new();
+        public Nutrition ActualTotal { get; set; } = new();
+
+        public int PlannedMeals { get; set; }
+        public int EatenMeals { get; set; }
+
+        public int CompletionPercent =>
+            PlannedMeals == 0 ? 0 : (int)((double)EatenMeals / PlannedMeals * 100);
+    }
+
+    public class ReportDayVm
+    {
+        public int DayIndex { get; set; }
+        public string DayName { get; set; }
+
+        public List<ReportMealVm> Meals { get; set; } = new();
+
+        public Nutrition Planned { get; set; } = new();
+        public Nutrition Actual { get; set; } = new();
+    }
+
+    public class ReportMealVm
+    {
+        public string MealType { get; set; }
+        public string MealName { get; set; }
+
+        public bool IsEaten { get; set; }
+        public bool IsSubstituted { get; set; }
+
+        public Nutrition Planned { get; set; }
+        public Nutrition Actual { get; set; }
     }
 
 }

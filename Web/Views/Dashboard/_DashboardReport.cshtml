@@ -1,0 +1,110 @@
+﻿@model Domain.Entitites.DashboardReportVm
+
+<div id="report-container" class="mt-4">
+
+    <h3>@Model.Title</h3>
+
+    <div class="alert alert-info">
+        Соблюдение плана: <strong>@Model.CompletionPercent %</strong>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Итого за неделю</h5>
+            <table class="table table-bordered">
+                <tr>
+                    <th></th>
+                    <th>Ккал</th>
+                    <th>Б</th>
+                    <th>Ж</th>
+                    <th>У</th>
+                </tr>
+                <tr>
+                    <td>План</td>
+                    <td>@Model.PlannedTotal.Calories</td>
+                    <td>@Model.PlannedTotal.Proteins</td>
+                    <td>@Model.PlannedTotal.Fats</td>
+                    <td>@Model.PlannedTotal.Carbs</td>
+                </tr>
+                <tr class="table-success">
+                    <td>Факт</td>
+                    <td>@Model.ActualTotal.Calories</td>
+                    <td>@Model.ActualTotal.Proteins</td>
+                    <td>@Model.ActualTotal.Fats</td>
+                    <td>@Model.ActualTotal.Carbs</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    @foreach (var day in Model.Days)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>@day.DayName</strong>
+            </div>
+            <div class="card-body">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Приём пищи</th>
+                            <th>Блюдо</th>
+                            <th>Съедено</th>
+                            <th>Ккал</th>
+                            <th>Б</th>
+                            <th>Ж</th>
+                            <th>У</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            
+                            var mealTypeNames = new Dictionary<string, string>
+                                        {
+                                        { "Breakfast", "Завтрак" },
+                                        { "Lunch", "Обед" },
+                                        { "Dinner", "Ужин" },
+                                        { "Snack", "Перекус" }
+                                        };
+
+                            var mealOrder = new List<string>
+                                        {
+                                        "Breakfast",
+                                        "Lunch",
+                                        "Dinner",
+                                        "Snack"
+                                        };
+
+                            var sortedMeals = day.Meals
+                            .OrderBy(m => mealOrder.IndexOf(m.MealType))
+                            .ToList();
+                        }
+
+                        @foreach (var meal in sortedMeals)
+                        {
+                            <tr class="@(meal.IsEaten ? "" : "table-secondary")">
+                                <td>@mealTypeNames.GetValueOrDefault(meal.MealType, meal.MealType)</td>
+                                <td>
+                                    @meal.MealName
+                                    @if (meal.IsSubstituted)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">Замена</span>
+                                    }
+                                </td>
+                                <td>@(meal.IsEaten ? "Да" : "Нет")</td>
+                                <td>@meal.Actual.Calories</td>
+                                <td>@meal.Actual.Proteins</td>
+                                <td>@meal.Actual.Fats</td>
+                                <td>@meal.Actual.Carbs</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    }
+
+
+</div>

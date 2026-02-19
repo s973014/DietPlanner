@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Domain.Entitites;
+using Domain.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Domain.Entitites;
 using System.Threading.Tasks;
+
 
 namespace Application.Interfaces
 {
@@ -24,5 +26,11 @@ namespace Application.Interfaces
 
         Task UpdateAsync(DailyMealProgress progress);
         public Task SetEatenAsync(Guid userId, Guid dailyMealId, bool isEaten);
+
+        Task<DashboardReportVm> BuildFullReportAsync(Guid userId);
+
+        public Task ClearWeeklyPlanProgressAsync(Guid userId);
     }
+
+    
 }

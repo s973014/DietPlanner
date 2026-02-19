@@ -13,6 +13,22 @@
         "Суббота",
         "Воскресенье"
     };
+
+    var mealTypeNames = new Dictionary<string, string>
+    {
+        { "Breakfast", "Завтрак" },
+        { "Lunch", "Обед" },
+        { "Dinner", "Ужин" },
+        { "Snack", "Перекус" }
+    };
+
+    var mealOrder = new List<string>
+    {
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+    };
 }
 
 <h2 class="mb-4">@ViewData["Title"]</h2>
@@ -48,6 +64,7 @@ else
                             {
                                 var mealsForDay = plan.Days
                                 .Where(dm => dm.DayOfWeek == day)
+                                .OrderBy(dm => mealOrder.IndexOf(dm.MealType))
                                 .ToList();
 
                                 if (!mealsForDay.Any())
@@ -63,7 +80,7 @@ else
                                                 @if (meal.IsSubstituted)
                                                 {
                                                     <div class="alert alert-warning p-2 mb-2">
-                                                        <strong>@meal.MealType:</strong>
+                                                        <strong>@mealTypeNames.GetValueOrDefault(meal.MealType, meal.MealType):</strong>
                                                         @meal.MealName
                                                         <br />
                                                         <small class="text-muted">🔁 Это заменённое блюдо</small>
@@ -72,7 +89,7 @@ else
                                                 else
                                                 {
                                                     <div>
-                                                        <strong>@meal.MealType:</strong>
+                                                        <strong>@mealTypeNames.GetValueOrDefault(meal.MealType, meal.MealType):</strong>
                                                         @meal.MealName
                                                     </div>
                                                 }

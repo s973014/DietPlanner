@@ -49,6 +49,12 @@ namespace Infrastructure.Data.Repositories
             _context.Users.Update(user);
         }
 
+        public async Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
         public void Remove(User user)
         {
             _context.Users.Remove(user);
@@ -74,9 +80,18 @@ namespace Infrastructure.Data.Repositories
             if (user == null)
                 return;
 
-            user.WeeklyPlanId = null;
+            var progresses = await _context.Progresses
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
 
-            _context.Users.Update(user);
+            if (progresses.Any())
+                _context.Progresses.RemoveRange(progresses);
+
+
+            user.WeeklyPlanId = null;
+            user.CurrentPlanDay = 0;
+
+            
             await _context.SaveChangesAsync();
         }
     }
