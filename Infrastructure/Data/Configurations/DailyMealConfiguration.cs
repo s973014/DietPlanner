@@ -34,6 +34,7 @@ namespace Infrastructure.Data.Configurations
                    .WithMany(w => w.DailyMeals)
                    .HasForeignKey(x => x.WeeklyPlanId)
                    .OnDelete(DeleteBehavior.Cascade);
+            
         }
 
     }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260214090227_AddProductAllergyRelation")]
-    partial class AddProductAllergyRelation
+    [Migration("20260219065430_DockerInit")]
+    partial class DockerInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,9 +65,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DayIndex")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsEaten")
-                        .HasColumnType("boolean");
-
                     b.Property<Guid>("MealId")
                         .HasColumnType("uuid");
 
@@ -75,7 +72,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("WeeklyPlanId")
+                    b.Property<Guid>("WeeklyPlanId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -85,6 +82,35 @@ namespace Infrastructure.Migrations
                     b.HasIndex("WeeklyPlanId");
 
                     b.ToTable("daily_meals", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entitites.DailyMealProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DailyMealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsEaten")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ReplacementMealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DailyMealId");
+
+                    b.HasIndex("ReplacementMealId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("daily_meal_progress", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entitites.Meal", b =>
@@ -151,21 +177,21 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("OriginalMealId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SubstituteId")
+                    b.Property<Guid>("SubstituteMealId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("OriginalMealId");
 
-                    b.HasIndex("SubstituteId");
+                    b.HasIndex("SubstituteMealId");
 
                     b.ToTable("substitutions", (string)null);
                 });
@@ -178,6 +204,11 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ActivityLevel")
                         .HasColumnType("text");
+
+                    b.Property<int>("CurrentPlanDay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -203,10 +234,15 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("WeeklyPlanId")
+                        .HasColumnType("uuid");
+
                     b.Property<float?>("Weight")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("WeeklyPlanId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -220,15 +256,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("weekly_plans", (string)null);
                 });
@@ -253,14 +281,44 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entitites.Meal", "Meal")
                         .WithMany()
                         .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entitites.WeeklyPlan", "WeeklyPlan")
+                        .WithMany("DailyMeals")
+                        .HasForeignKey("WeeklyPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entitites.WeeklyPlan", null)
-                        .WithMany("DailyMeals")
-                        .HasForeignKey("WeeklyPlanId");
-
                     b.Navigation("Meal");
+
+                    b.Navigation("WeeklyPlan");
+                });
+
+            modelBuilder.Entity("Domain.Entitites.DailyMealProgress", b =>
+                {
+                    b.HasOne("Domain.Entitites.DailyMeal", "DailyMeal")
+                        .WithMany("Progresses")
+                        .HasForeignKey("DailyMealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entitites.Meal", "ReplacementMeal")
+                        .WithMany()
+                        .HasForeignKey("ReplacementMealId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Entitites.User", "User")
+                        .WithMany("MealProgresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DailyMeal");
+
+                    b.Navigation("ReplacementMeal");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entitites.MealProduct", b =>
@@ -326,37 +384,46 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entitites.Substitution", b =>
                 {
-                    b.HasOne("Domain.Entitites.Product", "OriginalProduct")
+                    b.HasOne("Domain.Entitites.Meal", "OriginalMeal")
                         .WithMany()
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("OriginalMealId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entitites.Product", "SubstituteProduct")
+                    b.HasOne("Domain.Entitites.Meal", "SubstituteMeal")
                         .WithMany()
-                        .HasForeignKey("SubstituteId")
+                        .HasForeignKey("SubstituteMealId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("OriginalProduct");
+                    b.Navigation("OriginalMeal");
 
-                    b.Navigation("SubstituteProduct");
+                    b.Navigation("SubstituteMeal");
                 });
 
-            modelBuilder.Entity("Domain.Entitites.WeeklyPlan", b =>
+            modelBuilder.Entity("Domain.Entitites.User", b =>
                 {
-                    b.HasOne("Domain.Entitites.User", "User")
+                    b.HasOne("Domain.Entitites.WeeklyPlan", "WeeklyPlan")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WeeklyPlanId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("User");
+                    b.Navigation("WeeklyPlan");
+                });
+
+            modelBuilder.Entity("Domain.Entitites.DailyMeal", b =>
+                {
+                    b.Navigation("Progresses");
                 });
 
             modelBuilder.Entity("Domain.Entitites.Meal", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Domain.Entitites.User", b =>
+                {
+                    b.Navigation("MealProgresses");
                 });
 
             modelBuilder.Entity("Domain.Entitites.WeeklyPlan", b =>

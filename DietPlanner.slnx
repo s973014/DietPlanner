@@ -1,6 +1,12 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path=".env" />
+  </Folder>
   <Project Path="Application/Application.csproj">
     <BuildDependency Project="Domain/Domain.csproj" />
+  </Project>
+  <Project Path="docker-compose.dcproj">
+    <Build />
   </Project>
   <Project Path="Domain/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj">
