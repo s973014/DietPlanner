@@ -32,7 +32,7 @@
 1. Склонируйте репозиторий:
 
 ```bash
-git clone https://github.com/username/diet-planner.git
+git clone https://github.com/s973014/DietPlanner.git
 cd diet-planner
 ```
 2. Создайте .env файл с настройками базы данных:
